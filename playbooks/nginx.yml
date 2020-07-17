@@ -1,0 +1,7 @@
+- name: Build NGINXplus Container Image
+  hosts: support[0]
+  gather_facts: no
+  roles:
+  - role: nginxplus
+    vars:
+      nginxplus_build: true
