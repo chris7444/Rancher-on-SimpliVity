@@ -32,10 +32,12 @@
   set_fact:
     home_dir: "{{ lookup('env','HOME') }}"
 
-- name: Make sure git is there
+- name: Make sure prereqs are met
   become: true
   apt:
-    name: git
+    pkg:
+    - python3-docker
+    - git
     state: present
 
 - name: Clone the Kubernetes-Ingress Repo
@@ -53,9 +55,16 @@
   - nginx-repo.crt
   - nginx-repo.key
 
+- name: Login the registry
+  docker_login:
+    ca_cert: "{{ harbor_tls_cacert_file }}"
+    username: admin
+    password: "{{ vault_harbor_admin_password }}"
+    registry_url: "{{ registry_fqdn }}"
+    state: present
+
 - name: Build the container image
   shell: |
     cd {{ home_dir }}/kubernetes-ingress
-      make PREFIX=registry.hpe.org/nginx-ingress
+    make DOCKERFILE=DockerfileForPlus PREFIX={{ registry_fqdn }}/{{ registry_project }}/nginx-ingress
   environment: "{{ env }}"
-  

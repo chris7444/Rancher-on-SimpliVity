@@ -2,6 +2,12 @@
   hosts: support[0]
   gather_facts: no
   roles:
+  - role: harbor
+    vars:
+      get_vars: true
   - role: nginxplus
     vars:
       nginxplus_build: true
+      registry_fqdn: "{{ harbor_fqdn }}"
+      registry_project: "{{ harbor_projects[0].project_name }}"
+      registry_user: "admin"
