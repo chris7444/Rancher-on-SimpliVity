@@ -24,7 +24,7 @@
 - set_fact:
     env:
       http_proxy: "{{ proxy.http }}"
-      https_proxy: "{{ proxy.http }}"
+      https_proxy: "{{ proxy.https }}"
       no_proxy: "{{ proxy.except }}"
   when: proxy is defined
 
@@ -55,6 +55,11 @@
   - nginx-repo.crt
   - nginx-repo.key
 
+- name: Create .docker directory
+  file:
+    path: "{{ home_dir }}/.docker"
+    state: directory
+
 - name: Login the registry
   docker_login:
     ca_cert: "{{ harbor_tls_cacert_file }}"
@@ -62,6 +67,23 @@
     password: "{{ vault_harbor_admin_password }}"
     registry_url: "{{ registry_fqdn }}"
     state: present
+
+- name: Load Docker client config
+  set_fact:
+    old_config: "{{ lookup('file', home_dir ~ '/.docker/config.json') | from_json }}"
+    proxy_config: "{{ lookup('template', 'config.json.j2') }}"
+  when: proxy is defined
+
+- name: Merge Proxy COnfig in existing Docker client config
+  set_fact:
+    new_config: "{{ old_config | combine (proxy_config) }}"
+  when: proxy is defined
+  
+- name: Write Docker Client config file
+  copy:
+    content: "{{ new_config | to_nice_json }}"
+    dest:  "{{ home_dir }}/.docker/config.json"
+  when: proxy is defined
 
 - name: Build the container image
   shell: |
