@@ -50,6 +50,7 @@
     cluster: "{{ vcenter_cluster }}"
     datacenter: "{{ datacenter }}"
     folder: "{{ datacenter }}/vm/{{ admin_folder }}"
+    resource_pool: "{{ admin_folder }}" 
     datastore: "{{ datastore }}"
     disk_provisioning: thin
     networks: '{"VM Network":"{{ vm_portgroup }}"}'

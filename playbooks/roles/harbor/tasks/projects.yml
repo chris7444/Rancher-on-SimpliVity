@@ -21,6 +21,8 @@
   uri:
     url: "{{ harbor_api_url }}/health"
     method: GET
+    headers:
+      accept: "application/json"
     validate_certs: no
     status_code:
       - 200 # API is answering

@@ -21,10 +21,11 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     validate_certs: "{{ vcenter_validate_certs }}"
-    esxi_hostname: "{{ esxi_host }}"
+    cluster: "{{ vcenter_cluster }}"
     datacenter: "{{ datacenter }}"
     datastore: "{{ datastore }}"
     folder: "{{ datacenter }}/vm/{{ folder }}"
+    resource_pool: "{{ folder }}" 
     name: "{{ inventory_hostname }}"
     template: "{{ template }}"
     state: present
